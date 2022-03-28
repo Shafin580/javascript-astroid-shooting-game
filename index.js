@@ -125,10 +125,19 @@ function animate() {
     projectile.update();
   });
 
-  astroids.forEach((astroid) => {
+  astroids.forEach((astroid, astroidIndex) => {
     astroid.update();
+
+    projectiles.forEach((projectile, projectileIndex) => {
+        const dist = Math.hypot(projectile.x - astroid.x, projectile.y - astroid.y);
+
+        if(dist - astroid.radius - projectile.radius < 1){
+            astroids.splice(astroidIndex, 1);
+            projectiles.splice(projectileIndex, 1);
+        }
+    })
   });
 }
 
 animate();
-//spawnAstroid();
+spawnAstroid();
