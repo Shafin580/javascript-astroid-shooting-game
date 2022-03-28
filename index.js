@@ -1,4 +1,6 @@
 const canvas = document.querySelector("canvas");
+const scoreElement = document.querySelector("#score");
+var score = 0;
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
@@ -121,7 +123,7 @@ var animation;
 
 function animate() {
   animation = requestAnimationFrame(animate);
-  context.fillStyle = 'rgba(0, 0, 0, 0.1)';
+  context.fillStyle = "rgba(0, 0, 0, 0.1)";
   context.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
   projectiles.forEach((projectile, index) => {
@@ -153,9 +155,14 @@ function animate() {
         projectile.y - astroid.y
       );
 
+      // Projectiles hitting astroids
       if (dist - astroid.radius - projectile.radius < 1) {
-        astroids.splice(astroidIndex, 1);
-        projectiles.splice(projectileIndex, 1);
+        setTimeout(() => {
+          astroids.splice(astroidIndex, 1);
+          projectiles.splice(projectileIndex, 1);
+          score += 100;
+          scoreElement.innerHTML = score;
+        }, 0);
       }
     });
   });
