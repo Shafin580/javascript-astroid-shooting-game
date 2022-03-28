@@ -117,8 +117,10 @@ function spawnAstroid() {
 
 // Looping animation
 
+var animation;
+
 function animate() {
-  requestAnimationFrame(animate);
+  animation = requestAnimationFrame(animate);
   context.clearRect(0, 0, canvas.width, canvas.height);
   player.draw();
   projectiles.forEach((projectile) => {
@@ -127,6 +129,12 @@ function animate() {
 
   astroids.forEach((astroid, astroidIndex) => {
     astroid.update();
+
+    const dist = Math.hypot(player.x - astroid.x, player.y - astroid.y);
+
+    if(dist - astroid.radius - player.radius < 1){
+        cancelAnimationFrame(animation);
+    }
 
     projectiles.forEach((projectile, projectileIndex) => {
         const dist = Math.hypot(projectile.x - astroid.x, projectile.y - astroid.y);
