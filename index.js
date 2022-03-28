@@ -68,7 +68,7 @@ class Astroid {
 
 // Creating Player
 
-const player = new Player(canvas.width / 2, canvas.height / 2, 30, "blue");
+const player = new Player(canvas.width / 2, canvas.height / 2, 10, "white");
 
 const projectiles = [];
 const astroids = [];
@@ -81,11 +81,11 @@ window.addEventListener("click", (event) => {
     event.clientX - canvas.width / 2
   );
   const velocity = {
-    x: Math.cos(angle),
-    y: Math.sin(angle),
+    x: Math.cos(angle) * 3,
+    y: Math.sin(angle) * 3,
   };
   projectiles.push(
-    new Projectile(canvas.width / 2, canvas.height / 2, 5, "red", velocity)
+    new Projectile(canvas.width / 2, canvas.height / 2, 5, "white", velocity)
   );
 });
 
@@ -93,7 +93,7 @@ window.addEventListener("click", (event) => {
 
 function spawnAstroid() {
   setInterval(() => {
-    const radius = Math.random() * (30-5) + 5;
+    const radius = Math.random() * (30 - 5) + 5;
     let x;
     let y;
     if (Math.random < 0.5) {
@@ -104,15 +104,15 @@ function spawnAstroid() {
       x = Math.random() * canvas.width;
       y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
     }
-    const color = "green";
+    const color = `hsl(${Math.random() * 360}, 50%, 50%)`;
 
     const angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
     const velocity = {
-      x: Math.cos(angle),
-      y: Math.sin(angle),
+      x: Math.cos(angle) * 2,
+      y: Math.sin(angle) * 2,
     };
     astroids.push(new Astroid(x, y, radius, color, velocity));
-  }, 1000);
+  }, 500);
 }
 
 // Looping animation
@@ -121,10 +121,21 @@ var animation;
 
 function animate() {
   animation = requestAnimationFrame(animate);
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = 'rgba(0, 0, 0, 0.1)';
+  context.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
-  projectiles.forEach((projectile) => {
+  projectiles.forEach((projectile, index) => {
     projectile.update();
+
+    //Removing Projectiles that go out of the screen
+    if (
+      projectile.x + projectile.radius < 0 ||
+      projectile.x - projectile.radius > canvas.width ||
+      projectile.y + projectile.radius < 0 ||
+      projectile.y - projectile.radius > canvas.height
+    ) {
+      projectiles.splice(index, 1);
+    }
   });
 
   astroids.forEach((astroid, astroidIndex) => {
@@ -132,18 +143,21 @@ function animate() {
 
     const dist = Math.hypot(player.x - astroid.x, player.y - astroid.y);
 
-    if(dist - astroid.radius - player.radius < 1){
-        cancelAnimationFrame(animation);
+    if (dist - astroid.radius - player.radius < 1) {
+      cancelAnimationFrame(animation);
     }
 
     projectiles.forEach((projectile, projectileIndex) => {
-        const dist = Math.hypot(projectile.x - astroid.x, projectile.y - astroid.y);
+      const dist = Math.hypot(
+        projectile.x - astroid.x,
+        projectile.y - astroid.y
+      );
 
-        if(dist - astroid.radius - projectile.radius < 1){
-            astroids.splice(astroidIndex, 1);
-            projectiles.splice(projectileIndex, 1);
-        }
-    })
+      if (dist - astroid.radius - projectile.radius < 1) {
+        astroids.splice(astroidIndex, 1);
+        projectiles.splice(projectileIndex, 1);
+      }
+    });
   });
 }
 
